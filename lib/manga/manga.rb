@@ -1,5 +1,5 @@
-class Manga
-    attribute :book_title, :likes, :book_url, :release_day, :price
+class MangaKeeper::Manga
+    attr_accessor :book_title, :likes, :book_url, :release_day, :price
 
     @@all = []
 
@@ -16,5 +16,7 @@ class Manga
         @@all
     end
 
-    
+    def print_manga
+        puts "#{book_title}   #{likes}   #{release_day}   #{price}"
+    end
 end

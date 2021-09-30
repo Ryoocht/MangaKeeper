@@ -1,10 +1,4 @@
-require 'nokogiri'
-require 'open-uri'
-
-require_relative './series.rb'
-require_relative './manga.rb'
-
-class Scraper
+class MangaKeeper::BookScraper
     SEARCH_URL = "https://www.viz.com/read/read/section/70220/more"
     SERIES_URL = "https://www.viz.com"
 
@@ -13,6 +7,7 @@ class Scraper
         Nokogiri::HTML(uri.open)
     end
 
+    #Manga List
     def create_manga_list
         doc = get_page(SEARCH_URL)
         puts "Loading..."
@@ -20,10 +15,16 @@ class Scraper
         manga_list = doc.css("div.pad-x-rg.pad-y-md.type-sm.type-rg--sm.type-md--lg.type-center.line-tight").map.with_index(1) do |title, i|
             print "."
             manga_title = title.text.strip
-            "#{i}. #{manga_title}"
+            {id: i, manga_title: manga_title}
         end
+        make_manga_list(manga_list)
     end
 
+    def make_manga_list(manga_list)
+        manga_list.each{|manga| MangaKeeper::List.new(manga)}
+    end
+
+    #Manga Series
     def get_all_manga(manga_title)
         doc = get_page("#{SERIES_URL}/#{manga_title}")
         series_details = doc.css("#series-intro").map do |detail|
@@ -39,6 +40,7 @@ class Scraper
         make_manga(series_details, book_details)
     end
 
+    #Manga Book Details
     def get_all_manga_details(url)
         book_details = get_document_with_url(url).css("div.shelf article").map do |detail|
             book_title = detail.css("h4 a").text.strip
@@ -49,6 +51,7 @@ class Scraper
         end
     end
 
+    #Each Manga Book Detail
     def get_each_manga(url)
         details = get_document_with_url(url).css("div#product_row").map do |detail|
             release_day = detail.css("div.o_release-date").text.gsub("Release", "").strip
@@ -68,5 +71,5 @@ class Scraper
     end
 end
 
-result = Scraper.new.get_all_manga_details("/read/black-clover/section/73009/more")
-puts result
+# result = Scraper.new.get_all_manga_details("/read/black-clover/section/73009/more")
+# puts result

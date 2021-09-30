@@ -1,4 +1,4 @@
-class Series
+class MangaKeeper::Series
     attr_accessor :title, :subtitle, :author, :url
 
     @@all = []
@@ -15,7 +15,7 @@ class Series
         @@all
     end
 
-    def print_manga_series
+    def print_series
         system("clear")
         puts "======================="
         puts "Title: #{title}"

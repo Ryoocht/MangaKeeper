@@ -1,8 +1,6 @@
-require_relative './scraper.rb'
-
-class SearchManga
+class MangaKeeper::SearchManga
     def show_all_result
-        result =  Scraper.new.create_manga_list
+        result =  MangaKeeper::Scraper.new.create_manga_list
         puts result
     end
 
