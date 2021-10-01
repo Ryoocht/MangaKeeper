@@ -1,13 +1,14 @@
 class MangaKeeper::Manga
-    attr_accessor :book_title, :likes, :release_day, :price
+    attr_accessor :book_title, :likes, :book_content
 
     @@all = []
 
-    def initialize(book_title:, likes:, release_day:, price:)
+    def initialize(book_title:, likes:, book_content:)
         @book_title = book_title
         @likes = likes
-        @release_day = release_day
-        @price = price
+        @book_content = book_content
+        # @release_day = book_content[:release_day]
+        # @price = book_content[:price]
         @@all << self
     end
 

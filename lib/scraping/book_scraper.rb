@@ -62,8 +62,7 @@ class MangaKeeper::BookScraper
     end
 
     def make_manga(series, books)
-        puts "#{series}"
-        MangaKeeper::Series.new(series)
-        # books.map {|book| MangaKeeper::Manga.new(book)}
+        MangaKeeper::Series.new(**series)
+        books.map {|book| MangaKeeper::Manga.new(**book)}
     end
 end
