@@ -1,4 +1,4 @@
-class List
+class MangaKeeper::List
     attr_accessor :id, :manga_title
 
     @@all = []

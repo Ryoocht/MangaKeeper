@@ -1,13 +1,12 @@
 class MangaKeeper::Series
-    attr_accessor :title, :subtitle, :author, :url
+    attr_accessor :title, :subtitle, :author
 
     @@all = []
     
-    def initialize(title:, subtitle:, author:, url:)
+    def initialize(title:, subtitle:, author:)
         @title = title
         @subtitle = subtitle
         @author = author
-        @url = url
         @@all << self
     end
 
