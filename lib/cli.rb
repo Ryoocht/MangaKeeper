@@ -54,11 +54,11 @@ class MangaKeeper::CLI
     def search_list(input)
         case input
         when 1
-
+            MangaKeeper::SearchManga.new.free_word_search
         when 2
             MangaKeeper::SearchManga.new.alphabetical_search
         when 3
-
+            MangaKeeper::SearchManga.new.category_search
         when 4
             start
         else

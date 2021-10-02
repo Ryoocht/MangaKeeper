@@ -21,5 +21,6 @@ class MangaKeeper::Series
         puts "Subtitle: #{subtitle}"
         puts "Author: #{author}"
         puts "======================="
+        puts "All mangas of #{title}"
     end
 end

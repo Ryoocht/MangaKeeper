@@ -43,7 +43,7 @@ class MangaKeeper::BookScraper
             likes = detail.css("figure a span").children.text.strip.gsub("+", "♥ ")
             book_url = detail.css("a.product-thumb").attribute("href").value.strip
             book_content = get_each_manga(book_url)
-            {book_title: book_title, likes: likes, book_content: book_content}
+            {book_title: book_title, likes: likes, book_content: book_content[0]}
         end
     end
 
