@@ -50,7 +50,7 @@ class MangaKeeper::SearchManga
                 puts "#{index}. #{title}"
             end
             divider
-            puts "Finally select a number of title"
+            puts "Finally select a number of the title"
             title_number = gets.to_i
             check_correct_input(title_number, sorted_list)
         else
@@ -71,7 +71,7 @@ class MangaKeeper::SearchManga
     end
 
     def get_manga_details(input, list)
-        manga_title = list[input-1].gsub(" ", "-")
+        manga_title = list[input-1].downcase.gsub(" ", "-")
         MangaKeeper::BookScraper.new.get_all_manga(manga_title)
         MangaKeeper::Series.all.each{|series| series.print_series}
         MangaKeeper::Manga.all.each{|manga| manga.print_manga}
@@ -91,7 +91,39 @@ class MangaKeeper::SearchManga
     end
 
     def category_search
-        
+        system("clear")
+        divider
+        genre_list = MangaKeeper::Genre.all.each.with_index(1) do |genre, index|
+            puts "#{index}. #{genre.genre_title}"
+        end
+        divider
+        puts "Select a number of genre / Press 0 to go back to Search"
+        input = gets.to_i
+        divider
+        serach_by_category(input, genre_list)
+    end
+
+    def serach_by_category(input, genre_list)
+        if input == 0
+            MangaKeeper::CLI.new.select_search
+        elsif input <= genre_list.size
+            manga_list = []
+            genre_title = genre_list[input-1].genre_title.strip.downcase.gsub(" ", "-")
+            MangaKeeper::BookScraper.new.get_categorised_manga(genre_title)
+            MangaKeeper::GenreManga.all.each.with_index(1) do |manga, index| 
+                manga_list << manga.manga_title
+                puts "#{index}. #{manga.manga_title}"
+            end
+            divider
+            puts "Finally select a number of the title"
+            title_number = gets.to_i
+            get_manga_details(title_number, manga_list)
+        else
+            puts "Type a number from 1 to the length of the list"
+            puts "Press 0 to go back to Search"
+            try_again = gets.to_i
+            serach_by_category(try_again, genre_list)
+        end
     end
 
     def divider

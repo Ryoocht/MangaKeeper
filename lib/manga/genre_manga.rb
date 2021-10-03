@@ -1,4 +1,4 @@
-class MangaKeeper::List
+class MangaKeeper::GenreManga
     attr_accessor :manga_title
 
     @@all = []

@@ -1,7 +1,7 @@
 class MangaKeeper::CLI
 
     def initialize
-        MangaKeeper::BookScraper.new.create_manga_list
+        MangaKeeper::BookScraper.new.create_manga_and_genre_list
     end
 
     def start
@@ -14,13 +14,15 @@ class MangaKeeper::CLI
         puts "4. NEW RELEASE MANGA"
         puts "5. COMING SOON MANGA"
         divider
-        puts "Select a number from Menu above"
+        puts "Select a number from Menu above or Press 0 to exit"
         input = gets.to_i
         menu_list(input)
     end
 
     def menu_list(input)
         case input
+        when 0
+            system("exit")
         when 1
             select_search
         when 2
@@ -77,7 +79,7 @@ class MangaKeeper::CLI
     end
 
     def select_new_release
-        puts "select_new_release method is invoked"
+        MangaKeeper::BookScraper.new.create_release_list
     end
 
     def select_coming_soon
