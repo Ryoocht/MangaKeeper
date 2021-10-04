@@ -77,7 +77,9 @@ class MangaKeeper::CLI
     end
 
     def select_favourite
-        puts "select_favourite method is invoked"
+        puts "There is no favourite manga yet"
+        puts "Find your favourite manga from SEARCH and add to favourite!!"
+        divider
     end
 
     def select_new_release
@@ -94,14 +96,16 @@ class MangaKeeper::CLI
         MangaKeeper::BookScraper.new.create_release_list(new_or_coming)
         MangaKeeper::Manga.all.map{|manga| manga.print_manga}
         choice = @@prompt.yes?("Do you wish to continue?")
-        back_or_exit(choice)
+        continue_or_exit(choice)
     end
 
-    def back_or_exit(choice)
-        if choice == "Y"
+    def continue_or_exit(choice)
+        if choice == true
             select_search
-        else input == "n"
+        else choice == false
+            system("clear")
             system("exit")
+            see_you
         end
     end
 

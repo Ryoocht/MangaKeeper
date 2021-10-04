@@ -74,18 +74,17 @@ class MangaKeeper::SearchManga
         MangaKeeper::BookScraper.new.get_all_manga_details(manga_title)
         MangaKeeper::Series.all.each{|series| series.print_series}
         MangaKeeper::Manga.all.each{|manga| manga.print_manga}
-        puts "Do you wish to continue? y / n"
-        last_input = gets.strip.downcase
-        continue_or_exit(last_input)
+        choice = @@prompt.yes?("Do you wish to continue?")
+        continue_or_exit(choice)
     end
 
-    def continue_or_exit(input)
-        if input == "y"
+    def continue_or_exit(choice)
+        if choice == true
             MangaKeeper::CLI.new.start
-        elsif input == "n"
+        else choice == false
+            system("clear")
             system("exit")
-        else
-            puts "Please type either y or n"
+            see_you
         end
     end
 
@@ -124,6 +123,18 @@ class MangaKeeper::SearchManga
             try_again = gets.to_i
             serach_by_category(try_again, genre_list)
         end
+    end
+
+    def see_you
+        puts "       ┏━━━┓━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┏┓┏┓┏┓"
+        puts "       ┃┏━┓┃━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┃┃┃┃┃┃"
+        puts "       ┃┗━━┓┏━━┓┏━━┓━━━━┏┓━┏┓┏━━┓┏┓┏┓━━━━┃┃┃┃┃┃"
+        puts "       ┗━━┓┃┃┏┓┃┃┏┓┃━━━━┃┃━┃┃┃┏┓┃┃┃┃┃━━━━┗┛┗┛┗┛"
+        puts "       ┃┗━┛┃┃┃━┫┃┃━┫━━━━┃┗━┛┃┃┗┛┃┃┗┛┃━━━━┏┓┏┓┏┓"
+        puts "       ┗━━━┛┗━━┛┗━━┛━━━━┗━┓┏┛┗━━┛┗━━┛━━━━┗┛┗┛┗┛"
+        puts "       ━━━━━━━━━━━━━━━━━┏━┛┃━━━━━━━━━━━━━━━━━━━"
+        puts "       ━━━━━━━━━━━━━━━━━┗━━┛━━━━━━━━━━━━━━━━━━━"
+        puts ""
     end
 
     def divider

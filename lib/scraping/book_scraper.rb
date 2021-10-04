@@ -5,6 +5,7 @@ class MangaKeeper::BookScraper
     CALENDAR_URL = "https://www.viz.com/calendar/"
 
     def get_page(url)
+        sleep 2 
         uri = URI.parse(url)
         Nokogiri::HTML(uri.open)
     end
