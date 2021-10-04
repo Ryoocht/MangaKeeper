@@ -2,7 +2,7 @@
 require 'open-uri'
 require 'nokogiri'
 require 'date'
-class CategoryScraper
+class Test
     CATEGORY_URL = "https://www.viz.com/read"
     SERIES_URL = "https://www.viz.com"  
 
@@ -24,5 +24,5 @@ class CategoryScraper
     end
 end
 
-result = CategoryScraper.new.coming_soon_calendar
+result = Test.new.coming_soon_calendar
 puts result
