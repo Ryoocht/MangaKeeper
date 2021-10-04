@@ -10,9 +10,8 @@ class MangaKeeper::CLI
         divider
         puts "1. SEARCH MANGA"
         puts "2. FAVOURITE MANGA"
-        puts "3. RANKING MANGA"
-        puts "4. NEW RELEASE MANGA"
-        puts "5. COMING SOON MANGA"
+        puts "3. NEW RELEASE MANGA"
+        puts "4. COMING SOON MANGA"
         divider
         puts "Select a number from Menu above or Press 0 to exit"
         input = gets.to_i
@@ -28,13 +27,11 @@ class MangaKeeper::CLI
         when 2
             select_favourite
         when 3
-            select_ranking
-        when 4
             select_new_release
-        when 5
+        when 4
             select_coming_soon
         else
-            puts "Select a number from 1 to 5"
+            puts "Select a number from 1 to 4 / Press 0 to exit"
             input = gets.to_i
             menu_list(input)
         end
@@ -74,16 +71,34 @@ class MangaKeeper::CLI
         puts "select_favourite method is invoked"
     end
 
-    def select_ranking
-        puts "select_ranking method is invoked"
-    end
-
     def select_new_release
-        MangaKeeper::BookScraper.new.create_release_list
+        puts "Loading..."
+        release_list(MangaKeeper::BookScraper.new_release_calendar)
     end
 
     def select_coming_soon
-        puts "select_coming_soon method is invoked"
+        puts "Loading..."
+        release_list(MangaKeeper::BookScraper.coming_soon_calendar)
+    end
+
+    def release_list(new_or_coming)
+        MangaKeeper::BookScraper.new.create_release_list(new_or_coming)
+        MangaKeeper::Manga.all.map{|manga| manga.print_manga}
+        puts "Press 0 to go back to search or 1 to exit"
+        input = gets.to_i
+        back_or_exit(input)
+    end
+
+    def back_or_exit(input)
+        if input == 0
+            select_search
+        elsif input == 1
+            system("exit")
+        else
+            puts "Press 0 or 1"
+            try_again_input = gets.to_i
+            back_or_exit(try_again_input) 
+        end
     end
 
     def divider

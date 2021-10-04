@@ -10,19 +10,19 @@ class CategoryScraper
         uri = URI.parse(url)
         Nokogiri::HTML(uri.open)
     end
+    
+    def new_release_calendar
+        prev_month = Date.today << 1
+        this_month = Date.today
+        two_month_calendar = prev_month.strftime("%Y/%m"), this_month.strftime("%Y/%m")
+    end
 
-    def release_calendar
-        addition = 0
-        this_month = Date.today << 1
-        five_month_calendar = []
-        
-        5.times {
-            five_month_calendar << (this_month >> addition).strftime("%Y/%m")
-            addition += 1
-        }
-        five_month_calendar
+    def coming_soon_calendar
+        next_month = Date.today >> 1
+        two_month = next_month >> 1
+        two_month_calendar = next_month.strftime("%Y/%m"), two_month.strftime("%Y/%m")
     end
 end
 
-result = CategoryScraper.new.release_calendar
+result = CategoryScraper.new.coming_soon_calendar
 puts result

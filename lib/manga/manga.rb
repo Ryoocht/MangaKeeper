@@ -1,15 +1,13 @@
 class MangaKeeper::Manga
-    attr_accessor :book_title, :likes
+    attr_accessor :book_title, :likes, :release_day, :price
 
     @@all = []
 
-    def initialize(book_title:, likes:, book_content:)
+    def initialize(book_title:, likes:, price:, release_day:)
         @book_title = book_title
         @likes = likes
-        book_content.each do |key, value|
-            self.class.attr_accessor(key)
-            self.send(("#{key}="), value)
-        end
+        @price = price
+        @release_day = release_day
         @@all << self
     end
 

@@ -72,7 +72,7 @@ class MangaKeeper::SearchManga
 
     def get_manga_details(input, list)
         manga_title = list[input-1].downcase.gsub(" ", "-")
-        MangaKeeper::BookScraper.new.get_all_manga(manga_title)
+        MangaKeeper::BookScraper.new.get_all_manga_details(manga_title)
         MangaKeeper::Series.all.each{|series| series.print_series}
         MangaKeeper::Manga.all.each{|manga| manga.print_manga}
         puts "Do you wish to continue? y / n"

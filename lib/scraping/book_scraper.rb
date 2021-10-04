@@ -37,40 +37,47 @@ class MangaKeeper::BookScraper
     end
 
     #Manga Series (1st level)
-    def get_all_manga(manga_title)
+    def get_all_manga_details(manga_title)
         doc = get_page("#{SERIES_URL}/#{manga_title}")
-        series_details = doc.css("#series-intro").map do |detail|
-            print "="
-            title = detail.css("h2#page_title").text.strip
-            subtitle = detail.css("p.type-md").text.strip
-            author = detail.css("span.disp-bl--bm").text.gsub("Created by", "").strip
+        series_details = doc.css("section.row.mar-y-lg.mar-b-xxl--md").map do |detail|
+            title = detail.css("h2.type-lg.type-xl--md").text.strip
+            subtitle = detail.css("p.type-md.type-lg--md.type-xl--lg").text.strip
+            author = detail.css("span.disp-bl--bm.mar-b-md").text.gsub("Created by", "").strip
             {title: title, subtitle: subtitle, author: author}
         end
-        url = doc.css("div.section_see_all a").attribute("href").value.strip
-        book_details = get_all_manga_details(url)
-        make_manga(series_details[0], book_details)
+        if doc.css("div.section_see_all a").attribute("href") != nil
+            url = doc.css("div.section_see_all a").attribute("href").value.strip
+            book_details = get_manga_books(url)
+            make_manga(series_details[0], book_details)
+        else
+            urls = doc.css("a.product-thumb.ar-inner.type-center").map do |url|
+                url.attribute("href").value.strip
+            end
+            book_details = urls.map{|url| get_each_manga(url)}
+            make_manga(series_details[0], book_details)
+        end
     end
 
     #Manga Book Details (2nd level)
-    def get_all_manga_details(url)
-        book_details = get_document_with_url(url).css("div.shelf article").map do |detail|
-            book_title = detail.css("h4 a").text.strip
-            likes = detail.css("figure a span").children.text.strip.gsub("+", "♥ ")
-            book_url = detail.css("a.product-thumb").attribute("href").value.strip
-            book_content = get_each_manga(book_url)
-            {book_title: book_title, likes: likes, book_content: book_content[0]}
+    def get_manga_books(url)
+        book_details = get_document_with_url(url).css("a.product-thumb.ar-inner.type-center").map do |detail|
+            book_url = detail.attribute("href").value.strip
+            get_each_manga(book_url)
         end
     end
 
     #Each Manga Book Detail (3rd level)
     def get_each_manga(url)
-        details = get_document_with_url(url).css("div.bg-off-white").map do |detail|
-            release_day = detail.css("div.o_release-date.mar-b-md").text.gsub("Release", "").strip
-            price = detail.css("span.type-md.type-lg--md.type-xl--lg.line-solid.weight-bold").text.gsub("*", "").strip
-            sleep 0.3
-            {release_day: release_day, price: price}
+        manga_data = {}
+        manga_detail = get_document_with_url(url).css("div.g-8--md.g-6--lg.g-omega--md.g-omega--lg.mar-b-xl").map do |detail|
+            book_title = detail.css("h2.type-lg").text.strip.gsub(",", "")
+            likes = detail.css("span.o_votes-up").text.strip.gsub("+", "♥ ")
+            price = detail.css("td span.type-md.type-lg--md.type-xl--lg.line-solid.weight-bold").text.gsub("*", "").strip
+            manga_data = {book_title: book_title, likes: likes, price: price}
         end
-        puts details
+        release_day = get_document_with_url(url).css("div.o_release-date.mar-b-md").text.gsub("Release", "").strip
+        manga_data[:release_day] = release_day
+        manga_data
     end
 
     def get_document_with_url(url)
@@ -105,30 +112,27 @@ class MangaKeeper::BookScraper
         genre_details.map{|manga| MangaKeeper::GenreManga.new(**manga)}
     end
 
-    def create_release_list
-        release_list = release_calendar.map do |date| 
+    def create_release_list(calendar)
+        release_list = calendar.map do |date| 
             calendar_doc = get_page("#{CALENDAR_URL}#{date}")
             calendar_details = calendar_doc.css("article.g-3.g-3--md.mar-b-lg.bg-white.color-off-black.type-sm.type-rg--lg").map do |manga|
-                book_title = manga.css("h4 a.color-off-black").text.strip
-                likes = manga.css("span.o_votes-up.disp-ib.color-mid-gray.mar-l-sm.v-mid.type-sm").text.strip
                 book_url = manga.css("a.product-thumb.ar-inner.type-center").attribute("href")
                 book_content = get_each_manga(book_url)
-                {book_title: book_title, likes: likes, book_content: book_content}
-                puts book_content
+                MangaKeeper::Manga.new(**book_content)
             end
         end
     end
 
-    def release_calendar
-        addition = 0
-        this_month = Date.today << 1
-        five_month_calendar = []
-        
-        5.times {
-            five_month_calendar << (this_month >> addition).strftime("%Y/%m")
-            addition += 1
-        }
-        five_month_calendar
+    #Split released manga and coming manga by date
+    def self.new_release_calendar
+        prev_month = Date.today << 1
+        this_month = Date.today
+        two_month_calendar = prev_month.strftime("%Y/%m"), this_month.strftime("%Y/%m")
     end
 
+    def self.coming_soon_calendar
+        next_month = Date.today >> 1
+        two_month = next_month >> 1
+        two_month_calendar = next_month.strftime("%Y/%m"), two_month.strftime("%Y/%m")
+    end
 end
