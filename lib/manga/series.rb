@@ -16,11 +16,11 @@ class MangaKeeper::Series
 
     def print_series
         system("clear")
-        puts "======================="
+        puts "=============================================="
         puts "Title: #{title}"
-        puts "Subtitle: #{subtitle}"
         puts "Author: #{author}"
-        puts "======================="
+        puts "Subtitle: #{subtitle}"
+        puts "=============================================="
         puts "All mangas of #{title}"
     end
 end

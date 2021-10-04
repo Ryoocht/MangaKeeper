@@ -1,27 +1,29 @@
 class MangaKeeper::CLI
 
+    @@prompt = TTY::Prompt.new
+
     def initialize
         MangaKeeper::BookScraper.new.create_manga_and_genre_list
     end
 
     def start
         system("clear")
+        title
         puts "Welcome to Manga Keeper"
         divider
-        puts "1. SEARCH MANGA"
-        puts "2. FAVOURITE MANGA"
-        puts "3. NEW RELEASE MANGA"
-        puts "4. COMING SOON MANGA"
+        choice = @@prompt.select("Choose one from Menu") do |menu|
+            menu.choice "SEARCH MANGA", 1
+            menu.choice "FAVOURITE MANGA", 2
+            menu.choice "NEW RELEASE MANGA", 3
+            menu.choice "COMING SOON MANGA", 4
+            menu.choice "Exit",5
+        end
         divider
-        puts "Select a number from Menu above or Press 0 to exit"
-        input = gets.to_i
-        menu_list(input)
+        menu_list(choice)
     end
 
     def menu_list(input)
         case input
-        when 0
-            system("exit")
         when 1
             select_search
         when 2
@@ -30,6 +32,10 @@ class MangaKeeper::CLI
             select_new_release
         when 4
             select_coming_soon
+        when 5
+            system("clear")
+            system("exit")
+            see_you
         else
             puts "Select a number from 1 to 4 / Press 0 to exit"
             input = gets.to_i
@@ -39,19 +45,22 @@ class MangaKeeper::CLI
     
     def select_search
         system("clear")
+        title
         puts "SEARCH MANGA"
         divider
-        puts "1. Free Word Search"
-        puts "2. Alphabetical Search"
-        puts "3. Category Search"
+        choice = @@prompt.select("How do you want to search?") do |menu|
+            menu.choice "Free Word Search", 1
+            menu.choice "Alphabetical Search", 2
+            menu.choice "Category Search", 3
+            menu.choice "Go back to Menu", 4
+            menu.choice "Exit",5
+        end
         divider
-        puts "Select a number to search / Press 4 to go back to Menu"
-        input = gets.to_i
-        search_list(input)
+        search_list(choice)
     end
 
-    def search_list(input)
-        case input
+    def search_list(choice)
+        case choice
         when 1
             MangaKeeper::SearchManga.new.free_word_search
         when 2
@@ -60,10 +69,10 @@ class MangaKeeper::CLI
             MangaKeeper::SearchManga.new.category_search
         when 4
             start
-        else
-            puts "Select a number from 1 to 3 or 4(Back)"
-            input = gets.to_i
-            search_list(input)
+        when 5
+            system("clear")
+            system("exit")
+            see_you
         end
     end
 
@@ -84,21 +93,35 @@ class MangaKeeper::CLI
     def release_list(new_or_coming)
         MangaKeeper::BookScraper.new.create_release_list(new_or_coming)
         MangaKeeper::Manga.all.map{|manga| manga.print_manga}
-        puts "Press 0 to go back to search or 1 to exit"
-        input = gets.to_i
-        back_or_exit(input)
+        choice = @@prompt.yes?("Do you wish to continue?")
+        back_or_exit(choice)
     end
 
-    def back_or_exit(input)
-        if input == 0
+    def back_or_exit(choice)
+        if choice == "Y"
             select_search
-        elsif input == 1
+        else input == "n"
             system("exit")
-        else
-            puts "Press 0 or 1"
-            try_again_input = gets.to_i
-            back_or_exit(try_again_input) 
         end
+    end
+
+    def title
+        puts "      ░▒█▀▄▀█░█▀▀▄░█▀▀▄░█▀▀▀░█▀▀▄░░░▒█░▄▀░█▀▀░█▀▀░▄▀▀▄░█▀▀░█▀▀▄"
+        puts "      ░▒█▒█▒█░█▄▄█░█░▒█░█░▀▄░█▄▄█░░░▒█▀▄░░█▀▀░█▀▀░█▄▄█░█▀▀░█▄▄▀"
+        puts "      ░▒█░░▒█░▀░░▀░▀░░▀░▀▀▀▀░▀░░▀░░░▒█░▒█░▀▀▀░▀▀▀░█░░░░▀▀▀░▀░▀▀"
+        puts ""
+    end
+
+    def see_you
+        puts "       ┏━━━┓━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┏┓┏┓┏┓"
+        puts "       ┃┏━┓┃━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┃┃┃┃┃┃"
+        puts "       ┃┗━━┓┏━━┓┏━━┓━━━━┏┓━┏┓┏━━┓┏┓┏┓━━━━┃┃┃┃┃┃"
+        puts "       ┗━━┓┃┃┏┓┃┃┏┓┃━━━━┃┃━┃┃┃┏┓┃┃┃┃┃━━━━┗┛┗┛┗┛"
+        puts "       ┃┗━┛┃┃┃━┫┃┃━┫━━━━┃┗━┛┃┃┗┛┃┃┗┛┃━━━━┏┓┏┓┏┓"
+        puts "       ┗━━━┛┗━━┛┗━━┛━━━━┗━┓┏┛┗━━┛┗━━┛━━━━┗┛┗┛┗┛"
+        puts "       ━━━━━━━━━━━━━━━━━┏━┛┃━━━━━━━━━━━━━━━━━━━"
+        puts "       ━━━━━━━━━━━━━━━━━┗━━┛━━━━━━━━━━━━━━━━━━━"
+        puts ""
     end
 
     def divider

@@ -16,6 +16,6 @@ class MangaKeeper::Manga
     end
 
     def print_manga
-        puts "#{book_title}   #{likes}   #{release_day}   #{price}"
+        puts "#{book_title} | #{likes} | #{release_day} | #{price}"
     end
 end

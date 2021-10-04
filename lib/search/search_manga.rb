@@ -1,12 +1,11 @@
 class MangaKeeper::SearchManga
 
+    @@prompt = TTY::Prompt.new
+
     def free_word_search
         system("clear")
         divider
-        puts "Type the title of manga"
-        divider
-        puts "Type the title of manga / Press 0 to go back to Search"
-        input = gets.strip.downcase
+        input = @@prompt.ask("What is a name of the manga?",  required: true)
         divider
         search_by_free_word(input)
     end
@@ -16,7 +15,7 @@ class MangaKeeper::SearchManga
             MangaKeeper::CLI.new.select_search
         else
             list = MangaKeeper::List.all.map{|manga| manga.manga_title}
-            sorted_list = list.select{|title| title.downcase.include?(input)}
+            sorted_list = list.select{|title| title.downcase.include?(input.downcase)}
             sorted_list.each.with_index(1){|title, index| puts "#{index}. #{title}"}
             divider
             puts "If you find the manga, type a number of the title."
@@ -33,11 +32,10 @@ class MangaKeeper::SearchManga
     def alphabetical_search
         system("clear")
         divider
-        puts "Type the first letter of title"
+        input = @@prompt.ask("Type the first letter of title",  required: true)
         divider
-        puts "Type the first letter of title / Press 0 to go back to Search"
-        input = gets.strip.upcase
-        search_by_alphabet(input)
+        puts input
+        search_by_alphabet(input.upcase)
     end
 
     def search_by_alphabet(input)
@@ -54,7 +52,7 @@ class MangaKeeper::SearchManga
             title_number = gets.to_i
             check_correct_input(title_number, sorted_list)
         else
-            puts "Type the first letter from A - Z / or 1(Back)"
+            puts "Type the first letter from A - Z / or 0(Back)"
             input = gets.strip.upcase
             search_by_alphabet(input)
         end
@@ -71,6 +69,7 @@ class MangaKeeper::SearchManga
     end
 
     def get_manga_details(input, list)
+        puts "Loading..."
         manga_title = list[input-1].downcase.gsub(" ", "-")
         MangaKeeper::BookScraper.new.get_all_manga_details(manga_title)
         MangaKeeper::Series.all.each{|series| series.print_series}
@@ -108,6 +107,7 @@ class MangaKeeper::SearchManga
             MangaKeeper::CLI.new.select_search
         elsif input <= genre_list.size
             manga_list = []
+            puts "★ #{genre_list[input-1].genre_title.strip} ★"
             genre_title = genre_list[input-1].genre_title.strip.downcase.gsub(" ", "-")
             MangaKeeper::BookScraper.new.get_categorised_manga(genre_title)
             MangaKeeper::GenreManga.all.each.with_index(1) do |manga, index| 

@@ -1,6 +1,7 @@
 require 'open-uri'
 require 'nokogiri'
 require 'date'
+require 'tty-prompt'
 require_relative '../lib/manga_keeper.rb'
 require_relative '../lib/manga/genre_manga.rb'
 require_relative '../lib/manga/genre.rb'
